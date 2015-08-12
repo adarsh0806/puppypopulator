@@ -1,0 +1,22 @@
+<html>
+<body>
+<form action= "{{url_for('add_shelter')}}" method = 'POST'>
+<p>ID:</p>
+<input type = 'integer' size='30' name = 'id'>
+<br>
+<p>Name:</p>
+<input type = 'text' size='30' name = 'name'>
+<br>
+<p>City:</p>
+<input type = 'text' size='30' name = 'city'>
+<br>
+<p>Max capacity:</p>
+<input type = 'integer' size='30' name = 'maximum_capacity'>
+<br>
+<p>Current Capacity:</p>
+<input type = 'integer' size='30' name = 'current_occupancy'>
+<br>
+<br>
+<input type='submit' value='Add'>
+</body>
+</html>

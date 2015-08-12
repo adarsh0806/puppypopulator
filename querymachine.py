@@ -9,6 +9,11 @@ from sqlalchemy import asc
 from datetime import date, datetime, timedelta
 import datetime
 
+import os
+from flask import Flask, flash, g, jsonify, redirect, render_template,request, session, url_for, request
+#from flask.ext.github import GitHub
+app = Flask(__name__)
+
 engine = create_engine('sqlite:///puppyshelter1.db', convert_unicode=True, echo=False)
 Base = declarative_base()
 Base.metadata.reflect(engine)
@@ -54,6 +59,72 @@ def checkin(num_pup, shel_cap):
 	else:
 		print "Shelter will take these puppies, thank you!"
 
+
+@app.route('/')
+def hello_world():
+    return 'Hello World!'
+
+@app.route('/puppies/<int:puppy_id>/')
+def view_puppies(puppy_id):
+	#Add a puppy, get info on a puppy, update puppy info , delete puppy
+	#view all the puppies
+	stmt = db_session.query(Puppy).filter_by(id = puppy_id)
+	return render_template('puppies.html', stmt = stmt)
+	
+@app.route('/puppies/new/', methods = ['GET', 'POST'])
+def add_puppy():
+	db_session = scoped_session(sessionmaker(bind=engine))
+	if request.method == 'POST':
+		newPuppy = Puppy(id = request.form['id'], name = request.form['name'],\
+			gender = request.form['gender'])
+		db_session.add(newPuppy)
+		db_session.commit()
+		return redirect(url_for('view_puppies', puppy_id = request.form['id']))
+	else:
+		return render_template('newpuppy.html')
+	#return 'Puppy added.'
+
+
+@app.route('/shelters/<int:shelter_id>/')
+def view_shelter(shelter_id):
+	stmt = db_session.query(Shelter).filter_by(id = shelter_id)
+	return render_template('shelters.html', stmt = stmt)
+
+@app.route('/shelters/new/', methods = ['GET', 'POST'])
+def add_shelter():
+	db_session = scoped_session(sessionmaker(bind=engine))
+	if request.method == 'POST':
+		newShelter = Shelter(id = request.form['id'], name = request.form['name'],\
+			city = request.form['city'], maximum_capacity = request.form['maximum_capacity'],\
+			current_occupancy = request.form['current_occupancy'])
+		db_session.add(newShelter)
+		db_session.commit()
+		return redirect(url_for('view_shelter', shelter_id = request.form['id']))
+	else:
+		return render_template('newShelter.html')	
+	
+
+@app.route('/adopters/<int:adopter_id>/')
+def view_adopters(adopter_id):
+	stmt = db_session.query(Adopter).filter_by(id = adopter_id)
+	return render_template('adopters.html', stmt = stmt)
+
+@app.route('/adopters/new/', methods = ['GET', 'POST'])	
+def add_adopter():
+	db_session = scoped_session(sessionmaker(bind=engine))
+	if request.method == 'POST':
+		newAdopter = Adopter(id = request.form['id'], name = request.form['name'])
+		db_session.add(newAdopter)
+		db_session.commit()
+		return redirect(url_for('view_adopters', adopter_id = request.form['id']))
+	else:
+		return render_template('newAdopter.html')	
+
+
+
+
+
+
 if __name__ == '__main__':
     db_session = scoped_session(sessionmaker(bind=engine))
     checkin(15, 'Palo Alto Humane Society')
@@ -61,8 +132,8 @@ if __name__ == '__main__':
     #     print item
     #1. Query all of the puppies and return the results in ascending alphabetical order
     stmt = db_session.query(Puppy).order_by(Puppy.name.asc())
-    # for item in stmt:
-    # 	print item.name
+    for item in stmt:
+    	print item.name
     
     #2. Query all of the puppies that are less than 6 months old organized by the youngest first
     today = datetime.date.today()
@@ -94,10 +165,11 @@ if __name__ == '__main__':
    	# 	print "Adopter:", item
 
    	#shelter capacity
-   	stmt = db_session.query(Shelter.name, Shelter.maximum_capacity)
+   	stmt = db_session.query(Shelter.id,Shelter.name, Shelter.maximum_capacity)
    	# for item in stmt:
    	# 	print 'Shelter capacity:', item
-
+   	app.debug = True
+    app.run(host='0.0.0.0', port=8000)
 
    	
    	

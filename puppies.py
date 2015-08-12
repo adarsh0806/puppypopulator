@@ -52,5 +52,5 @@ class Adopter(Base):
     name = Column(String(250), nullable=False)
     puppy_id = Column(Integer, ForeignKey('puppy.id'))
 
-engine = create_engine('sqlite:///puppyshelter1.db')
+engine = create_engine('sqlite:///puppyshelter2.db')
 Base.metadata.create_all(engine)

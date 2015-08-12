@@ -8,7 +8,7 @@ import datetime
 import random
 
 
-engine = create_engine('sqlite:///puppyshelter1.db')
+engine = create_engine('sqlite:///puppyshelter2.db')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
