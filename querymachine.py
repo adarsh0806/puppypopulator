@@ -64,6 +64,8 @@ def checkin(num_pup, shel_cap):
 def hello_world():
     return 'Hello World!'
 
+
+###########
 @app.route('/puppies/<int:puppy_id>/')
 def view_puppies(puppy_id):
 	#Add a puppy, get info on a puppy, update puppy info , delete puppy
@@ -84,7 +86,22 @@ def add_puppy():
 		return render_template('newpuppy.html')
 	#return 'Puppy added.'
 
+@app.route('/puppies/<int:puppy_id>/edit', methods = ['GET', 'POST'])
+def edit_puppy(puppy_id):
+	db_session = scoped_session(sessionmaker(bind=engine))
+	editedItem = db_session.query(Puppy).filter_by(id = puppy_id).one()
+	if request.method == 'POST':
+		editedItem.name = request.form['name']
+		db_session.add(editedItem)
+		db_session.commit()
+		return redirect(url_for('view_puppies', puppy_id = puppy_id))
+	else:
+		return render_template('edit_puppy.html', puppy_id = puppy_id)
 
+
+
+
+###########
 @app.route('/shelters/<int:shelter_id>/')
 def view_shelter(shelter_id):
 	stmt = db_session.query(Shelter).filter_by(id = shelter_id)
@@ -102,8 +119,22 @@ def add_shelter():
 		return redirect(url_for('view_shelter', shelter_id = request.form['id']))
 	else:
 		return render_template('newShelter.html')	
-	
 
+@app.route('/shelters/<int:shelter_id>/edit', methods = ['GET', 'POST'])
+def edit_shelter(shelter_id):	
+	db_session = scoped_session(sessionmaker(bind=engine))
+	editedItem = db_session.query(Shelter).filter_by(id = shelter_id).one()
+	if request.method == 'POST':
+		editedItem.name = request.form['name']
+		db_session.add(editedItem)
+		db_session.commit()
+		return redirect(url_for('view_shelter', shelter_id = shelter_id))
+	else:
+		return render_template('edit_shelter.html', shelter_id = shelter_id)
+
+
+
+###########
 @app.route('/adopters/<int:adopter_id>/')
 def view_adopters(adopter_id):
 	stmt = db_session.query(Adopter).filter_by(id = adopter_id)
@@ -120,7 +151,17 @@ def add_adopter():
 	else:
 		return render_template('newAdopter.html')	
 
-
+@app.route('/adopters/<int:adopter_id>/edit', methods = ['GET', 'POST'])
+def edit_adopter(adopter_id):	
+	db_session = scoped_session(sessionmaker(bind=engine))
+	editedItem = db_session.query(Adopter).filter_by(id = adopter_id).one()
+	if request.method == 'POST':
+		editedItem.name = request.form['name']
+		db_session.add(editedItem)
+		db_session.commit()
+		return redirect(url_for('view_adopters', adopter_id = adopter_id))
+	else:
+		return render_template('edit_adopter.html', adopter_id = adopter_id)
 
 
 
